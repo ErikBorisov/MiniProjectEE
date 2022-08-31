@@ -24,7 +24,7 @@ public class UserHomeServlet extends HttpServlet {
         if(currentUser!=null){
             req.getRequestDispatcher("WEB-INF/userHome.jsp").forward(req, resp);
         }else {
-            resp.sendRedirect("/MiniProjectEE_war_exploded/home");
+            resp.sendRedirect("/MiniProjectEE_war_exploded/sign-up");
         }
 
     }

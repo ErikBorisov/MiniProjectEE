@@ -22,8 +22,9 @@ public class RegistrationServlet extends HttpServlet {
         userManager = new UserManager();
     }
 
+
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         String name = req.getParameter("reg_name");
         String surname = req.getParameter("reg_surname");
@@ -35,7 +36,7 @@ public class RegistrationServlet extends HttpServlet {
 
         boolean exist = userManager.existByEmail(email);
         if (exist) {
-            resp.sendRedirect("/MiniProjectEE_war_exploded/home?reg_error=Email already used");
+            resp.sendRedirect("/MiniProjectEE_war_exploded/sign-up.jsp?reg_error=Email already used");
         } else {
             User currentUser = userManager.save(User.builder()
                     .name(name)
@@ -49,7 +50,7 @@ public class RegistrationServlet extends HttpServlet {
             HttpSession session = req.getSession();
             session.setAttribute("currentUser", currentUser);
             resp.sendRedirect("/MiniProjectEE_war_exploded/user-home");
-
         }
+
     }
 }
