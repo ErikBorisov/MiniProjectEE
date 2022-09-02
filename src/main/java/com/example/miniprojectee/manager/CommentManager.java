@@ -119,13 +119,15 @@ public class CommentManager {
         }
         return comments;
     }
+
+//    public void deleteArticle()
     @SneakyThrows
-    public void deleteFromMyArticles(Integer artId, Integer comId, User user) {
+    public void deleteFromMyArticles(int articleId, int commentId, User user) {
         PreparedStatement statement = connection.prepareStatement("DELETE c FROM comments c " +
-                "INNER JOIN articles a ON a.ID = c.article_ID " +
-                "WHERE c.ID = ? AND c.article_ID = ? AND (c.author_ID =? OR a.user_ID=?)");
-        statement.setInt(1, comId);
-        statement.setInt(2, artId);
+                "INNER JOIN articles a ON a.id = c.article_id " +
+                "WHERE c.id = ? AND c.article_id = ? AND (c.author_id =? OR a.user_id=?)");
+        statement.setInt(1, commentId);
+        statement.setInt(2, articleId);
         statement.setInt(3, user.getId());
         statement.setInt(4, user.getId());
         int i = statement.executeUpdate();
@@ -134,6 +136,27 @@ public class CommentManager {
         }else {
             System.out.println("You do not have access to delete the comment!");
         }
+    }
+    @SneakyThrows
+    public List<Comment> all() {
+        List<Comment>  comments = new ArrayList<>();
+//        String sql = "select c.*, u.name, u.surname from comments c " +
+//                "inner join users u on c.author_id = u.id";
+        String sql = "SELECT comments.*, users.name, users.surname FROM comments " +
+                "INNER JOIN users ON comments.author_id = users.id";
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+        while (resultSet.next()) {
+            Comment comment = Comment.builder()
+                    .content("content")
+                    .author(User.builder()
+                            .name(resultSet.getString("name"))
+                            .surname(resultSet.getString("surname"))
+                            .build())
+                    .build();
+            comments.add(comment);
+        }
+        return comments;
     }
 }
 

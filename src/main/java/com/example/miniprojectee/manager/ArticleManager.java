@@ -70,13 +70,15 @@ public class ArticleManager {
             int id = resultSet.getInt("id");
             String title = resultSet.getString("title");
             String content = resultSet.getString("content");
-            articles.add(Article.builder()
+            Article article = Article.builder()
                     .id(id)
                     .title(title)
                     .content(content)
                     .author(author)
                     .userId(author.getId())
-                    .build());
+                    .build();
+            article.setComments(commentManager.commentsByArticle(article));
+            articles.add(article);
         }
         return articles;
     }
@@ -99,6 +101,7 @@ public class ArticleManager {
                             .surname(resultSet.getString("surname"))
                             .build())
                     .build();
+            article.setComments(commentManager.commentsByArticle(article));
             articles.add(article);
         }
         return articles;
@@ -114,8 +117,15 @@ public class ArticleManager {
         int updatedRowCount = preparedStatement.executeUpdate();
         return updatedRowCount > 0;
     }
-
-
+    @SneakyThrows
+    public void deleteArticle(int id,User user) {
+        PreparedStatement statement1 = connection.prepareStatement("DELETE FROM articles WHERE ID = ? and user_ID = ?");
+        statement1.setInt(1, id);
+        statement1.setInt(2, user.getId());
+        int i = statement1.executeUpdate();
+        if (i > 0) System.out.println("Article deleted");
+        else System.out.println("Wrong ID");
+    }
     @SneakyThrows
     public boolean updateArticleById(int id, Article article) {
         String query = "update articles a set a.title = ?, a.content = ? where id = ?";
